@@ -52,7 +52,7 @@ st.markdown("""
 queries_db = {
     "Economics": {
         "desc": "Muestra los KPIs: SIs, SHPs, SIs/SHPs, CPS, RPS, GMV, NR, RPS/GMV, CPS/GMV, y % SIs FBM ",
-        "sql": "CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPI_FR_ECONOMICS AS (
+        "sql": """CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPI_FR_ECONOMICS AS (
 
 WITH data_preparada AS (
   SELECT
@@ -79,17 +79,11 @@ WITH data_preparada AS (
   FROM `meli-bi-data.SBOX_SHPCDG.BAJADA_WATERFALL_ME`
   WHERE 1=1
     AND SHP_MONTH_HANDLING >= 202506
-    AND CURRENCY = "LOCAL"
+    AND CURRENCY = 'LOCAL'
   GROUP BY 1, 2, 3, 4
 )
 
-
--- ==============================================================================
 -- 1. TOTAL SITE 
--- ==============================================================================
-
--- A. ABSOLUTOS
-
 SELECT 
     MONTH, 
     SIT_SITE_ID AS SITE,   
@@ -116,7 +110,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- C. CPS (Costo / SHP)
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -130,7 +123,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- D. RPS (Revenue / SHP)
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -144,7 +136,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- E. GMV / SHP
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -158,7 +149,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- F. CPS / GMV
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -172,7 +162,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- G. NR / GMV
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -186,7 +175,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- H. RPS / GMV 
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -200,7 +188,6 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- I. SI / SHP 
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -214,11 +201,7 @@ FROM data_preparada GROUP BY 1,2,3
 
 UNION ALL
 
--- ==============================================================================
 -- 2. BY PICKING TYPE
--- ==============================================================================
-
--- A. SIs por Picking Type 
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -232,7 +215,6 @@ FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
 
 UNION ALL
 
--- B. Shipments por Picking Type 
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -246,7 +228,6 @@ FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
 
 UNION ALL
 
--- C. CPS por Picking Type
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -260,7 +241,6 @@ FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
 
 UNION ALL
 
--- D. SI/SHP por Picking Type
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
@@ -272,24 +252,22 @@ SELECT
     SAFE_DIVIDE(SUM(SIS), SUM(SHP)) 
 FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
 
--- ==============================================================================
--- 3. % SIs FBM
--- ==============================================================================
-
 UNION ALL
 
+-- 3. % SIs FBM
 SELECT 
     MONTH, 
     SIT_SITE_ID, 
     HORIZONTE ,
-    CONCAT('SHARE_SIS_FBM'), 
-    CONCAT('% SIs FBM'), 
+    'SHARE_SIS_FBM', 
+    '% SIs FBM', 
     SUM(CASE WHEN PICKING_TYPE = 'FBM' THEN SIS ELSE 0 END) AS NUMERADOR, 
     SUM(SIS) AS DENOMINADOR, 
     SAFE_DIVIDE( SUM(CASE WHEN PICKING_TYPE = 'FBM' THEN SIS ELSE 0 END), SUM(SIS)) AS KPI_VALUE
 FROM data_preparada 
 GROUP BY 1,2,3
-ORDER BY 1, 2, 3, 4) ;"
+ORDER BY 1, 2, 3, 4) ;"""
+
     },
     "Tasa de Cancelación": {
         "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
