@@ -43,8 +43,9 @@ st.markdown("""
     </style>
     
     <div class="header-banner">
-        <h1>📊 KPIs Financial Review</h1>
-        <p>Repositorio centralizado de queries estratégicas</p>
+        <h1>KPIs Financial Review</h1>
+        <p> Repositorio de queries para la carga de KPIs utilizados en el FR</p>
+        <p> Hay queries que pueden generar uno o mas KPIs </p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -63,7 +64,7 @@ queries_db = {
 # 4. SIDEBAR CON BUSCADOR
 st.sidebar.title("🔍 Buscador")
 opcion = st.sidebar.selectbox(
-    "Selecciona una consulta:", 
+    "Selecciona una query:", 
     options=list(queries_db.keys())
 )
 
