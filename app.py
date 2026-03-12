@@ -44,16 +44,252 @@ st.markdown("""
     
     <div class="header-banner">
         <h1>KPIs Financial Review</h1>
-        <p> Repositorio de queries para la carga de KPIs utilizados en el FR</p>
-        <p> Hay queries que pueden generar uno o mas KPIs </p>
+        <p> Repositorio de queries para la carga de KPIs utilizados en el FR </p>
     </div>
     """, unsafe_allow_html=True)
 
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
 queries_db = {
-    "Ventas Netas por Canal": {
-        "desc": "Muestra el GMV (Gross Merchandise Volume) filtrado por marketplace y tipo de envío.",
-        "sql": "SELECT canal, SUM(price) FROM orders WHERE status = 'delivered' GROUP BY 1;"
+    "Economics": {
+        "desc": "Muestra los KPIs: SIs, SHPs, SIs/SHPs, CPS, RPS, GMV, NR, RPS/GMV, CPS/GMV, y % SIs FBM ",
+        "sql": "CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPI_FR_ECONOMICS AS (
+
+WITH data_preparada AS (
+  SELECT
+    SIT_SITE_ID,
+    SHP_MONTH_HANDLING AS MONTH,
+    SHP_PICKING_TYPE_ID_AGG AS PICKING_TYPE,
+    HORIZONTE ,
+
+    SUM(Q_SHP) AS SHP, 
+    SUM(SIS) AS SIS,
+    
+    -- Revenue Total
+    SUM(IFNULL(REV_REAL,0) + IFNULL(AGING,0) + IFNULL(RESTO_FBM_CHARGES,0)) AS REVENUE,
+    
+    -- Costo Total
+    SUM(IFNULL(TRANSFERENCES_COST,0) + IFNULL(TOTAL_COST,0)) AS COSTO,
+    
+    -- GMV
+    SUM(IFNULL(GMV,0)) AS GMV_VAL,
+    
+    -- Net Revenue
+    SUM( (IFNULL(REV_REAL,0) + IFNULL(AGING,0) + IFNULL(RESTO_FBM_CHARGES,0)) - (IFNULL(TRANSFERENCES_COST,0) + IFNULL(TOTAL_COST,0)) ) AS NET_REVENUE
+
+  FROM `meli-bi-data.SBOX_SHPCDG.BAJADA_WATERFALL_ME`
+  WHERE 1=1
+    AND SHP_MONTH_HANDLING >= 202506
+    AND CURRENCY = "LOCAL"
+  GROUP BY 1, 2, 3, 4
+)
+
+
+-- ==============================================================================
+-- 1. TOTAL SITE 
+-- ==============================================================================
+
+-- A. ABSOLUTOS
+
+SELECT 
+    MONTH, 
+    SIT_SITE_ID AS SITE,   
+    HORIZONTE ,
+    'SI_TOT' AS KPI_CODE,  
+    'SIs' AS KPI_NAME,
+    SUM(SIS) AS NUMERADOR, 
+    1 AS DENOMINADOR,
+    SAFE_DIVIDE(SUM(SIS),1) AS KPI_VALUE 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'SHP_TOT', 
+    'SHPs', 
+    SUM(SHP), 
+    1, 
+    SAFE_DIVIDE(SUM(SHP),1) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- C. CPS (Costo / SHP)
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'CPS', 
+    'CPS', 
+    SUM(COSTO), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(COSTO), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- D. RPS (Revenue / SHP)
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'RPS+FF', 
+    'RPS', 
+    SUM(REVENUE), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(REVENUE), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- E. GMV / SHP
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'GMV_SHP', 
+    'GMV/SHP', 
+    SUM(GMV_VAL), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(GMV_VAL), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- F. CPS / GMV
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'CPS_GMV', 
+    'CPS/GMV', 
+    SUM(COSTO), 
+    SUM(GMV_VAL), 
+    SAFE_DIVIDE(SUM(COSTO), SUM(GMV_VAL)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- G. NR / GMV
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'NR+FF/GMV', 
+    'OSM', 
+    SUM(NET_REVENUE), 
+    SUM(GMV_VAL), 
+    SAFE_DIVIDE(SUM(NET_REVENUE), SUM(GMV_VAL)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- H. RPS / GMV 
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'RPS_GMV', 
+    'RPS/GMV', 
+    SUM(REVENUE), 
+    SUM(GMV_VAL), 
+    SAFE_DIVIDE(SUM(REVENUE), SUM(GMV_VAL)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- I. SI / SHP 
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    'SI_SHP', 
+    'SI/SHP', 
+    SUM(SIS), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(SIS), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3
+
+UNION ALL
+
+-- ==============================================================================
+-- 2. BY PICKING TYPE
+-- ==============================================================================
+
+-- A. SIs por Picking Type 
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    CONCAT('SI_', PICKING_TYPE), 
+    CONCAT('SIs ', PICKING_TYPE), 
+    SUM(SIS), 
+    1, 
+    SAFE_DIVIDE(SUM(SIS),1) 
+FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
+
+UNION ALL
+
+-- B. Shipments por Picking Type 
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE , 
+    CONCAT('SHP_', PICKING_TYPE), 
+    CONCAT('SHPs ', PICKING_TYPE), 
+    SUM(SHP), 
+    1, 
+    SAFE_DIVIDE(SUM(SHP),1) 
+FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
+
+UNION ALL
+
+-- C. CPS por Picking Type
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    CONCAT('CPS_', PICKING_TYPE), 
+    CONCAT('CPS ', PICKING_TYPE), 
+    SUM(COSTO), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(COSTO), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
+
+UNION ALL
+
+-- D. SI/SHP por Picking Type
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    CONCAT('SI_SHP_', PICKING_TYPE), 
+    CONCAT('SIs/SHP ', PICKING_TYPE), 
+    SUM(SIS), 
+    SUM(SHP), 
+    SAFE_DIVIDE(SUM(SIS), SUM(SHP)) 
+FROM data_preparada GROUP BY 1,2,3,PICKING_TYPE
+
+-- ==============================================================================
+-- 3. % SIs FBM
+-- ==============================================================================
+
+UNION ALL
+
+SELECT 
+    MONTH, 
+    SIT_SITE_ID, 
+    HORIZONTE ,
+    CONCAT('SHARE_SIS_FBM'), 
+    CONCAT('% SIs FBM'), 
+    SUM(CASE WHEN PICKING_TYPE = 'FBM' THEN SIS ELSE 0 END) AS NUMERADOR, 
+    SUM(SIS) AS DENOMINADOR, 
+    SAFE_DIVIDE( SUM(CASE WHEN PICKING_TYPE = 'FBM' THEN SIS ELSE 0 END), SUM(SIS)) AS KPI_VALUE
+FROM data_preparada 
+GROUP BY 1,2,3
+ORDER BY 1, 2, 3, 4) ;"
     },
     "Tasa de Cancelación": {
         "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
