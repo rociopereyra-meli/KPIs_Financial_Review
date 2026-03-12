@@ -61,7 +61,7 @@ st.markdown("""
 
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
 queries_db = {
-    "Economics": {
+    "KPIs FR - Economics": {
         "desc": "Muestra los KPIs: SIs,  SHPs,  SIs/SHPs,  CPS,  RPS,  GMV,  NR,  RPS/GMV,  CPS/GMV, y % SIs FBM ",
         "sql": """CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPI_FR_ECONOMICS AS (
 
@@ -280,47 +280,85 @@ GROUP BY 1,2,3
 ORDER BY 1, 2, 3, 4) ;"""
 
     },
+    "KPIs FR - from ME Excecutive": {
+        "desc": "Trae los KPis del Dashboard ME Excecutive : Net Productivity XD y Net Productivity SVC , Ratio In/Out , Cap5  y % Box ",
+        "sql": """"CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPIs_ME_FR AS (
+
+SELECT 
+  CAST (YEAR_MONTH AS STRING) AS MONTH_HANDLING,
+  SITE_ID AS SIT_SITE_ID,   
+  'REAL' AS HORIZONTE,
+  KPI_CODE AS METRIC_NAME,
+  KPI_NAME AS Descripcion, 
+  NUMERADOR AS NUMERATOR,
+  DENOMINADOR AS DENOMINATOR,
+  SAFE_DIVIDE(NUMERADOR,DENOMINADOR) AS KPI_VALUE
+FROM `meli-bi-data.WHOWNER.DM_SHP_ME_EXECUTIVE_SUMMARY` A
+LEFT JOIN `meli-bi-data.WHOWNER.LK_SHP_CDG_CALENDAR` B
+  ON A.DATE_VALUE = B.MONTH_START_DATE 
+WHERE 1 = 1                         
+  AND SITE_ID IN ('MLB','MLM', 'MLA','MLC','MCO','MLU')
+  AND DATE_UNIT IN ('MONTH')  
+  AND KPI_NAME IN ( 'Global Net Productivity XD',
+                    'Global Net Productivity SVC',
+                    'Ratio In/Out FBM Procesado',
+                    'Buffering FBM (Cap 5) Fast',
+                    'Share Cajas'
+                    )
+
+  AND DATE_VALUE >= '2024-01-01'
+GROUP BY ALL );"""
+    }
+
+    ,
     "Tasa de Cancelación": {
         "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
         "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
     }
-}
 
+    ,
+    "Tasa de Cancelación": {
+        "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
+        "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
+    }
+
+    ,
+    "Tasa de Cancelación": {
+        "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
+        "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
+    }
+
+    ,
+    "Tasa de Cancelación": {
+        "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
+        "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
+    }
+
+    ,
+    "Tasa de Cancelación": {
+        "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
+        "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
+    }
+
+    ,
+    "Tasa de Cancelación": {
+        "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
+        "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
+    }
+    
+}
 # 4. SIDEBAR CON BUSCADOR
 st.sidebar.title("🔍 Buscador")
-opcion = st.sidebar.selectbox("Selecciona una vista:", ["Inicio"] + list(queries_db.keys()))
+opcion = st.sidebar.selectbox(
+    "Selecciona una query:", 
+    options=list(queries_db.keys())
+)
 
-# 5. CONTENIDO PRINCIPAL
-if opcion == "Inicio":
-    st.markdown("## 📋 Índice de KPIs y Consultas")
-    
-    # Renderizamos la tabla moderna
-    st.markdown("""
-    <table class="indice-tabla">
-        <thead>
-            <tr><th>Grupo / KPI</th><th>Query a buscar</th></tr>
-        </thead>
-        <tbody>
-            <tr class="fila-grupo"><td colspan="2">ECONOMICS</td></tr>
-            <tr><td>SIs, SHPs, GMV, NR, CPS, RPS, OSM</td><td>Economics</td></tr>
-            <tr class="fila-grupo"><td colspan="2">DISTRIBUCION</td></tr>
-            <tr><td>Tasa de Cancelación de órdenes</td><td>Tasa de Cancelación</td></tr>
-            <tr class="fila-grupo"><td colspan="2">FBM</td></tr>
-            <tr><td>Próximamente...</td><td>-</td></tr>
-        </tbody>
-    </table>
-    """, unsafe_allow_html=True)
+# 5. CONTENIDO PRINCIPAL (Sin el índice, directo al grano)
+st.markdown(f"## {opcion}")
+st.info(queries_db[opcion]["desc"])
 
-else:
-    # --- TODO ESTO DEBE TENER 4 ESPACIOS DE SANGRÍA PARA QUE FUNCIONE ---
-    st.markdown(f"## {opcion}")
-    st.write(queries_db[opcion]["desc"])
+with st.expander("📂 Ver Código SQL", expanded=True):
+    st.code(queries_db[opcion]["sql"], language="sql")
 
-    with st.expander("📂 Ver Código SQL", expanded=True):
-        st.code(queries_db[opcion]["sql"], language="sql")
-
-    st.divider()
-
-    # 6. FEEDBACK
-    st.subheader("💬 Feedback")
-    st.link_button("Sugerir cambio en esta Query", "https://forms.google.com")
+st.divider()
