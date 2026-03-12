@@ -3,7 +3,7 @@ import streamlit as st
 # 1. Configuración de página
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="🟡")
 
-# 2. CSS Optimizado: Equilibrio de espacios y centrado vertical
+# 2. CSS Corrección Final: Centrado Vertical y Espacio Útil
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
@@ -12,26 +12,28 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Header Fijo - Ajustamos el padding para centrar mejor el texto */
+    /* Franja Amarilla: Altura fija y segura */
     .sticky-header {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         background-color: #FFE600;
-        padding: 25px 0px 20px 0px; /* Reducido para que el texto suba dentro de la franja */
         color: #2D3277;
         text-align: center;
         z-index: 999;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        height: 130px; /* Altura más equilibrada */
+        height: 140px; /* Altura estable */
+        display: flex; /* Usamos Flexbox para centrar el texto verticalmente */
+        flex-direction: column;
+        justify-content: center; /* Esto centra el título y subtítulo verticalmente */
     }
     
     .sticky-header h2 {
         margin: 0;
+        padding-top: 10px; /* Un pequeño ajuste para que no toque el techo real */
         font-weight: 700;
-        font-size: 2rem;
-        line-height: 1.1;
+        font-size: 1.9rem;
     }
     
     .sticky-header p {
@@ -39,21 +41,15 @@ st.markdown("""
         font-size: 1rem;
     }
 
-    /* Espaciador - Ajustado para eliminar el espacio muerto */
+    /* Espaciador: Ajustado a la altura de la franja + un margen pequeño */
     .content-spacer {
-        margin-top: 150px; /* Antes era 220, ahora sube todo el contenido */
+        margin-top: 160px; /* 140px de la franja + 20px de aire */
     }
 
-    /* Ajuste de márgenes laterales */
+    /* Eliminamos el padding superior excesivo que Streamlit trae por defecto */
     .block-container {
-        padding-top: 2rem !important;
-        padding-left: 4rem !important;
-        padding-right: 4rem !important;
-    }
-
-    /* Estilo de la caja de código */
-    .stCode {
-        border-radius: 10px !important;
+        padding-top: 0rem !important; 
+        padding-bottom: 2rem !important;
     }
     </style>
     
