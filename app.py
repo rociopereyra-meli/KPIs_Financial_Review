@@ -51,7 +51,7 @@ st.markdown("""
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
 queries_db = {
     "Economics": {
-        "desc": "Muestra los KPIs: SIs, SHPs, SIs/SHPs, CPS, RPS, GMV, NR, RPS/GMV, CPS/GMV, y % SIs FBM ",
+        "desc": "Muestra los KPIs: SIs,  SHPs,  SIs/SHPs,  CPS,  RPS,  GMV,  NR,  RPS/GMV,  CPS/GMV, y % SIs FBM ",
         "sql": """CREATE OR REPLACE TABLE meli-bi-data.SBOX_SHPCDG.KPI_FR_ECONOMICS AS (
 
 WITH data_preparada AS (
