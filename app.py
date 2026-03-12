@@ -291,7 +291,6 @@ st.sidebar.title("🔍 Buscador")
 opcion = st.sidebar.selectbox("Selecciona una vista:", ["Inicio"] + list(queries_db.keys()))
 
 # 5. CONTENIDO PRINCIPAL
-
 if opcion == "Inicio":
     st.markdown("## 📋 Índice de KPIs y Consultas")
     
@@ -313,15 +312,15 @@ if opcion == "Inicio":
     """, unsafe_allow_html=True)
 
 else:
-    # Mostramos la query seleccionada
-st.markdown(f"## {opcion}")
-st.write(queries_db[opcion]["desc"])
+    # --- TODO ESTO DEBE TENER 4 ESPACIOS DE SANGRÍA PARA QUE FUNCIONE ---
+    st.markdown(f"## {opcion}")
+    st.write(queries_db[opcion]["desc"])
 
-with st.expander("📂 Ver Código SQL", expanded=True):
-    st.code(queries_db[opcion]["sql"], language="sql")
+    with st.expander("📂 Ver Código SQL", expanded=True):
+        st.code(queries_db[opcion]["sql"], language="sql")
 
-st.divider()
+    st.divider()
 
-# 6. FEEDBACK
-st.subheader("💬 Feedback")
-st.link_button("Sugerir cambio en esta Query", "https://forms.google.com")
+    # 6. FEEDBACK
+    st.subheader("💬 Feedback")
+    st.link_button("Sugerir cambio en esta Query", "https://forms.google.com")
