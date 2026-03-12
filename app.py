@@ -3,61 +3,49 @@ import streamlit as st
 # 1. Configuración de página
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="🟡")
 
-# 2. CSS Corrección Final: Centrado Vertical y Espacio Útil
+# 2. CSS Simple: Estético pero sin complicaciones de posición
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
 
+    /* Fuente Global */
     html, body, [class*="css"]  {
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Franja Amarilla: Altura fija y segura */
-    .sticky-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
+    /* Banner Superior Estilo MeLi (No Sticky) */
+    .header-banner {
         background-color: #FFE600;
         color: #2D3277;
         text-align: center;
-        z-index: 999;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        height: 140px; /* Altura estable */
-        display: flex; /* Usamos Flexbox para centrar el texto verticalmente */
-        flex-direction: column;
-        justify-content: center; /* Esto centra el título y subtítulo verticalmente */
+        padding: 50px 20px;
+        margin: -60px -50px 30px -50px; /* Elimina márgenes de Streamlit para cubrir el ancho */
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
     }
     
-    .sticky-header h2 {
+    .header-banner h1 {
         margin: 0;
-        padding-top: 10px; /* Un pequeño ajuste para que no toque el techo real */
         font-weight: 700;
-        font-size: 1.9rem;
+        font-size: 2.5rem;
     }
     
-    .sticky-header p {
-        margin: 5px 0 0 0;
-        font-size: 1rem;
+    .header-banner p {
+        margin: 10px 0 0 0;
+        font-size: 1.1rem;
+        opacity: 0.9;
     }
 
-    /* Espaciador: Ajustado a la altura de la franja + un margen pequeño */
-    .content-spacer {
-        margin-top: 160px; /* 140px de la franja + 20px de aire */
-    }
-
-    /* Eliminamos el padding superior excesivo que Streamlit trae por defecto */
-    .block-container {
-        padding-top: 0rem !important; 
-        padding-bottom: 2rem !important;
+    /* Estilo para las cajas de código */
+    .stCode {
+        border-radius: 10px !important;
+        border: 1px solid #f0f0f0 !important;
     }
     </style>
     
-    <div class="sticky-header">
-        <h2>📊 KPIs Financial Review</h2>
+    <div class="header-banner">
+        <h1>📊 KPIs Financial Review</h1>
         <p>Repositorio centralizado de queries estratégicas</p>
     </div>
-    <div class="content-spacer"></div>
     """, unsafe_allow_html=True)
 
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
@@ -70,23 +58,20 @@ queries_db = {
         "desc": "Calcula el porcentaje de órdenes canceladas vs totales por mes.",
         "sql": "SELECT date_trunc('month', created_at), avg(case when status='cancelled' then 1 else 0 end) FROM orders GROUP BY 1;"
     }
-    # Sigue agregando aquí abajo...
 }
 
 # 4. SIDEBAR CON BUSCADOR
-st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
 st.sidebar.title("🔍 Buscador")
 opcion = st.sidebar.selectbox(
     "Selecciona una consulta:", 
     options=list(queries_db.keys())
 )
 
-# 5. CONTENIDO PRINCIPAL (Ya centrado visualmente por el spacer)
+# 5. CONTENIDO PRINCIPAL
 st.markdown(f"## {opcion}")
 st.write(queries_db[opcion]["desc"])
 
-# La cajita expandible que te gustó
-with st.expander("📂 Ver Código SQL", expanded=False): # Cambié a False para que empiece cerrada y sea más prolijo
+with st.expander("📂 Ver Código SQL", expanded=True):
     st.code(queries_db[opcion]["sql"], language="sql")
 
 st.divider()
