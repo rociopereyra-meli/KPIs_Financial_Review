@@ -3,7 +3,7 @@ import streamlit as st
 # 1. Configuración de página
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="🟡")
 
-# 2. CSS Simple: Estético pero sin complicaciones de posición
+# 2. CSS Mejorado: Título Centrado y Logo a la Derecha
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
@@ -13,14 +13,15 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Banner Superior Estilo MeLi (No Sticky) */
+    /* Banner Superior Estilo MeLi */
     .header-banner {
         background-color: #FFE600;
         color: #2D3277;
         text-align: center;
         padding: 50px 20px;
-        margin: -60px -50px 30px -50px; /* Elimina márgenes de Streamlit para cubrir el ancho */
+        margin: -60px -50px 30px -50px;
         box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
+        position: relative; /* Necesario para ubicar el logo adentro */
     }
     
     .header-banner h1 {
@@ -35,6 +36,15 @@ st.markdown("""
         opacity: 0.9;
     }
 
+    /* Logo posicionado a la derecha sin afectar el centro */
+    .logo-meli {
+        position: absolute;
+        right: 50px;
+        top: 50%;
+        transform: translateY(-50%); /* Centra el logo verticalmente respecto a la franja */
+        height: 45px;
+    }
+
     /* Estilo para las cajas de código */
     .stCode {
         border-radius: 10px !important;
@@ -44,7 +54,8 @@ st.markdown("""
     
     <div class="header-banner">
         <h1>KPIs Financial Review</h1>
-        <p> Repositorio de queries para la carga de KPIs utilizados en el FR </p>
+        <p>Repositorio de queries para la carga de KPIs utilizados en el FR</p>
+        <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadolibre/logo__large_plus@2x.png" class="logo-meli">
     </div>
     """, unsafe_allow_html=True)
 
