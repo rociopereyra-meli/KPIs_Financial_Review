@@ -288,12 +288,32 @@ ORDER BY 1, 2, 3, 4) ;"""
 
 # 4. SIDEBAR CON BUSCADOR
 st.sidebar.title("🔍 Buscador")
-opcion = st.sidebar.selectbox(
-    "Selecciona una query:", 
-    options=list(queries_db.keys())
-)
+opcion = st.sidebar.selectbox("Selecciona una vista:", ["Inicio"] + list(queries_db.keys()))
 
 # 5. CONTENIDO PRINCIPAL
+
+if opcion == "Inicio":
+    st.markdown("## 📋 Índice de KPIs y Consultas")
+    
+    # Renderizamos la tabla moderna
+    st.markdown("""
+    <table class="indice-tabla">
+        <thead>
+            <tr><th>Grupo / KPI</th><th>Query a buscar</th></tr>
+        </thead>
+        <tbody>
+            <tr class="fila-grupo"><td colspan="2">ECONOMICS</td></tr>
+            <tr><td>SIs, SHPs, GMV, NR, CPS, RPS, OSM</td><td>Economics</td></tr>
+            <tr class="fila-grupo"><td colspan="2">DISTRIBUCION</td></tr>
+            <tr><td>Tasa de Cancelación de órdenes</td><td>Tasa de Cancelación</td></tr>
+            <tr class="fila-grupo"><td colspan="2">FBM</td></tr>
+            <tr><td>Próximamente...</td><td>-</td></tr>
+        </tbody>
+    </table>
+    """, unsafe_allow_html=True)
+
+else:
+    # Mostramos la query seleccionada
 st.markdown(f"## {opcion}")
 st.write(queries_db[opcion]["desc"])
 
