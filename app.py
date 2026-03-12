@@ -1,56 +1,53 @@
 import streamlit as st
 
-# 1. Configuración estética
+# 1. Configuración de la página (DEBE SER LA PRIMERA LÍNEA DE STREAMLIT)
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="📊")
 
-# Estilo personalizado para que se vea más prolijo
-st.markdown("""
-    <style>
-    .main {
-        background-color: #f5f7f9;
-    }
-    .stCode {
-        border: 1px solid #e6e9ef;
-        border-radius: 10px;
-    }
-    </style>
-    """, unsafe_allow_status=True)
-
-# 2. Título y encabezado
+# 2. Título principal
 st.title("📊 KPIs Financial Review")
-st.markdown("Bienvenido al repositorio central de queries financieras. Selecciona una métrica en el menú lateral para ver el código.")
+st.markdown("Repositorio centralizado de queries. Selecciona una opción a la izquierda.")
 
-# 3. Diccionario de Queries (Aquí puedes agregar tus 20+ queries)
+# 3. Diccionario de Queries (Aquí es donde editas/agregas tus 20+ queries)
+# Estructura: "Nombre": ["Descripción", "Código SQL"]
 queries = {
-    "Ingresos Totales por Q": {
-        "desc": "Calcula la sumatoria de ingresos brutos agrupados por trimestre fiscal.",
-        "code": "SELECT quarter, SUM(revenue) as total_revenue \nFROM financial_table \nGROUP BY 1 \nORDER BY 1 DESC;"
-    },
-    "Margen Operativo": {
-        "desc": "Métrica para analizar la eficiencia operativa restando COGS y Gastos.",
-        "code": "SELECT date, (total_revenue - cogs - operating_expenses) / total_revenue as margin \nFROM monthly_reports;"
-    },
-    # Agrega más aquí siguiendo el mismo formato
+    "Ingresos Trimestrales": [
+        "Extrae el total de ingresos agrupado por trimestre fiscal.",
+        "SELECT quarter, SUM(revenue) FROM financial_table GROUP BY 1;"
+    ],
+    "Margen de Ganancia": [
+        "Calcula el porcentaje de margen operativo mensual.",
+        "SELECT month, (revenue - costs) / revenue AS margin FROM data;"
+    ],
+    "Gastos por Departamento": [
+        "Desglose de gastos operativos por área.",
+        "SELECT dept, SUM(expense) FROM expenses GROUP BY dept;"
+    ]
 }
 
-# 4. Sidebar (Menú Lateral)
-st.sidebar.header("Navegación")
-query_sel = st.sidebar.selectbox("Selecciona una métrica:", list(queries.keys()))
+# 4. Menú Lateral (Sidebar)
+st.sidebar.header("🔍 Buscador de Queries")
+lista_titulos = list(queries.keys())
+seleccion = st.sidebar.selectbox("Selecciona una métrica:", lista_titulos)
 
-# 5. Visualización de la Query Seleccionada
-st.subheader(f"Métrica: {query_sel}")
-st.info(queries[query_sel]["desc"])
+# 5. Mostrar Contenido Seleccionado
+st.header(f"Métrica: {seleccion}")
 
-# El bloque de código SQL
-st.code(queries[query_sel]["code"], language='sql')
+# Mostramos la descripción (primer elemento de la lista)
+st.info(queries[seleccion][0])
 
-# 6. Sección de Comentarios (CORREGIDO)
-st.markdown("---") # Esta es la forma correcta de poner la línea en Streamlit
-st.subheader("💬 Feedback y Comentarios")
-st.write("¿Tienes alguna duda sobre esta query o necesitas un ajuste?")
+# Mostramos el código (segundo elemento de la lista)
+st.subheader("Código SQL")
+st.code(queries[seleccion][1], language='sql')
 
-# Botón interactivo para comentarios
-contact_url = "https://forms.gle/TU_URL_DE_GOOGLE_FORMS" # Cambia esto por tu link
-st.link_button("Dejar un comentario / Sugerencia", contact_url)
+# 6. Pie de página y Comentarios
+st.divider()
+col1, col2 = st.columns(2)
 
-st.caption("Mantenido por el equipo de Finanzas | 2024")
+with col1:
+    st.write("¿Necesitas un ajuste en esta query?")
+    # REEMPLAZA EL LINK DE ABAJO CON TU GOOGLE FORM REAL
+    st.link_button("💬 Dejar comentario o sugerencia", "https://forms.google.com")
+
+with col2:
+    st.caption("Actualizado por última vez: Marzo 2024")
+    st.caption("Acceso restringido - Solo lectura")
