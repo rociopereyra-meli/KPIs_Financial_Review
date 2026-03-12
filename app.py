@@ -3,7 +3,7 @@ import streamlit as st
 # 1. Configuración de página
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="🟡")
 
-# 2. CSS Mejorado: Centrado, Sombra y Espaciado Correcto
+# 2. CSS Mejorado: Centrado, Sombra y Espaciado DINÁMICO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
@@ -12,40 +12,42 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Header Fijo y Centrado */
+    /* Header Fijo - Ajustado para que el texto no se corte */
     .sticky-header {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         background-color: #FFE600;
-        padding: 20px 0px; /* Más padding arriba y abajo */
+        padding: 30px 0px 20px 0px; /* Más espacio arriba para que baje el texto */
         color: #2D3277;
-        text-align: center; /* CENTRADO */
+        text-align: center;
         z-index: 999;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.15); /* Sombra más marcada */
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+        height: 120px; /* Fijamos la altura para controlar el espacio */
     }
     
     .sticky-header h2 {
         margin: 0;
         font-weight: 700;
         font-size: 1.8rem;
+        line-height: 1.2;
     }
     
     .sticky-header p {
         margin: 5px 0 0 0;
         font-size: 1rem;
-        opacity: 0.8;
+        font-weight: 400;
     }
 
-    /* Espaciador dinámico para que el contenido no se meta debajo del header */
+    /* Este es el que empuja el contenido hacia abajo */
     .content-spacer {
-        margin-top: 130px; /* Ajusta este número si quieres que el título de abajo suba o baje */
+        margin-top: 160px; /* Aumentamos de 130 a 160 para dar más aire */
     }
 
-    /* Estilo para que la caja expandible se vea más limpia */
-    .stCode {
-        border-radius: 10px !important;
+    /* Ajuste para que el sidebar no tape el header si es necesario */
+    [data-testid="stSidebarNav"] {
+        padding-top: 80px;
     }
     </style>
     
@@ -55,7 +57,6 @@ st.markdown("""
     </div>
     <div class="content-spacer"></div>
     """, unsafe_allow_html=True)
-
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
 queries_db = {
     "Ventas Netas por Canal": {
