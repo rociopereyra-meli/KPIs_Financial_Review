@@ -3,7 +3,7 @@ import streamlit as st
 # 1. Configuración de página
 st.set_page_config(page_title="KPIs Financial Review", layout="wide", page_icon="🟡")
 
-# 2. CSS Mejorado: Franja más ancha y más espacio hacia abajo
+# 2. CSS Optimizado: Equilibrio de espacios y centrado vertical
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
@@ -12,49 +12,48 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif;
     }
 
-    /* Header Fijo - Más alto y con más aire interno */
+    /* Header Fijo - Ajustamos el padding para centrar mejor el texto */
     .sticky-header {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         background-color: #FFE600;
-        padding: 45px 0px 35px 0px; /* Mucho más aire arriba y abajo del texto */
+        padding: 25px 0px 20px 0px; /* Reducido para que el texto suba dentro de la franja */
         color: #2D3277;
         text-align: center;
         z-index: 999;
-        box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
-        height: 160px; /* Franja más ancha */
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        height: 130px; /* Altura más equilibrada */
     }
     
     .sticky-header h2 {
         margin: 0;
         font-weight: 700;
-        font-size: 2.2rem; /* Título un poco más grande */
-        line-height: 1;
+        font-size: 2rem;
+        line-height: 1.1;
     }
     
     .sticky-header p {
-        margin: 10px 0 0 0;
-        font-size: 1.1rem;
-        font-weight: 400;
+        margin: 5px 0 0 0;
+        font-size: 1rem;
     }
 
-    /* Espaciador para bajar el código - Ahora mucho más amplio */
+    /* Espaciador - Ajustado para eliminar el espacio muerto */
     .content-spacer {
-        margin-top: 220px; /* Bajamos el contenido principal bastante más */
+        margin-top: 150px; /* Antes era 220, ahora sube todo el contenido */
     }
 
-    /* Estilo para las cajas expandibles */
-    .stCode {
-        border-radius: 12px !important;
-        border: 1px solid #eeeeee !important;
-    }
-
-    /* Ajuste de margen lateral para que no toque los bordes */
+    /* Ajuste de márgenes laterales */
     .block-container {
-        padding-left: 5rem !important;
-        padding-right: 5rem !important;
+        padding-top: 2rem !important;
+        padding-left: 4rem !important;
+        padding-right: 4rem !important;
+    }
+
+    /* Estilo de la caja de código */
+    .stCode {
+        border-radius: 10px !important;
     }
     </style>
     
@@ -64,7 +63,6 @@ st.markdown("""
     </div>
     <div class="content-spacer"></div>
     """, unsafe_allow_html=True)
-
 
 # 3. BASE DE DATOS DE QUERIES (Aquí editas tus 20+ queries)
 queries_db = {
